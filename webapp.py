@@ -90,13 +90,16 @@ with tab_figures:
     st.image('figures/cm_standard.png')
     st.caption("Table 1: Classification Report for Standard CNN")
     st.dataframe(df_standard, width=683)
+    st.divider()
     
     st.caption("Figure 2: Confusion Matrix for Less Attributes CNN")
     st.image('figures/cm_less.png')
     st.caption("Table 2: Classification Report for Less Attributes CNN")
     st.dataframe(df_less, width=683)
+    st.divider()
     
     st.caption("Figure 3: Confusion Matrix for More Attributes CNN")
     st.image('figures/cm_more.png')
     st.caption("Table 3: Classification Report for More Attributes CNN")
     st.dataframe(df_more, width=683)
+    st.divider()
