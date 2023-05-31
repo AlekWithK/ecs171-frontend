@@ -86,7 +86,7 @@ with tab_model:
     
     clicked = st.button("Predict", use_container_width=True)
 
-    result = '0'
+    result = '-'
     if clicked:
         input = [age, sex, cp, restbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
         new_row = pd.DataFrame([input], columns=df.columns)
