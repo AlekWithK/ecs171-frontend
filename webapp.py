@@ -2,7 +2,7 @@ import streamlit as st
 import pickle
 import pandas as pd
 
-model = pickle.load(open('model.pkl', 'rb'))
+model = pickle.load(open('mlp_model.pkl', 'rb'))
 
 tab_model, tab_figures = st.tabs(["Model", "Figures"])
 
@@ -10,19 +10,25 @@ with tab_model:
     html_temp = """
                 <div style="background-color:teal ;padding:0px">
                 <h2 style="color:white;text-align:center;">Heart Disease Predictor</h2>
-                <h5 style="color:white;text-align:center;">A Linearly Regressive ML Model</h5>
+                <h5 style="color:white;text-align:center;">An ML Classification Model</h5>
                 </div>
                 """
 
     st.markdown(html_temp, unsafe_allow_html=True)
     st.divider()
 
-    st.markdown("<h5 style='text-align: center; color: teal;'>General Attributes</h5>", unsafe_allow_html=True)
+    st.markdown("<h5 style='text-align: center; color: teal;'>General Health Attributes</h5>", unsafe_allow_html=True)
     col11, col12 = st.columns(2)
     with col11:
         age = st.number_input('Age', min_value=0, max_value=125, value=25, step=1)
+        
+        #db_select = ['0: No Diabetic History', '1: Diabetic Hisotry']
+        #db = int(st.selectbox('Diabetes History', db_select)[0])
     with col12:
         sex = 1 if st.selectbox('Biological Sex', ['Male', 'Female']) == 'Male' else 0
+        
+        #smoke_select = ['0: Non-Smoker', '1: Smoker']
+        #smoke = int(st.selectbox('Smoking History', smoke_select)[0])
         
     st.divider()
     st.markdown("<h5 style='text-align: center; color: teal;'>Pain Related Attributes</h5>", unsafe_allow_html=True)
@@ -33,7 +39,7 @@ with tab_model:
         cp = int(st.selectbox("Chest Pain (Angina)", cp_select)[0])
 
     with col22:
-        exang_select = ["1: Present", "2: Not Present"]
+        exang_select = ["0: Not Present", "1: Present"]
         exang = int(st.selectbox('Exercise Induced Angina', exang_select)[0])
 
     st.divider()
@@ -45,7 +51,8 @@ with tab_model:
     with col32:
         chol = st.number_input('Cholesterol (mg/dL)', min_value=25, max_value=300, value=175, step=1)
     with col33:
-        fbs = st.number_input('Fasting Blood Sugar (mg/dL)', min_value=25, max_value=200, value=90, step=1)
+        fbs_select = ['0: FBS < 120 mg/dL', '1: FBS > 120 mg/dL']
+        fbs = int(st.selectbox('Fasting Blood Sugar', fbs_select)[0])
         
     st.divider()
     st.markdown("<h5 style='text-align: center; color: teal;'>Other Attributes</h5>", unsafe_allow_html=True)
@@ -71,9 +78,8 @@ with tab_model:
 
     st.divider()
 
-    result = '0.00'
-    result = model.predict([[age, sex, cp, restbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
-    result = round(result[0], 2)
+    result = '0'
+    result = model.predict([[age, sex, cp, restbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])[0]
 
     st.info(f"Heart Disease Risk: {result}")    
     st.divider()
@@ -90,16 +96,13 @@ with tab_figures:
     st.image('figures/cm_standard.png')
     st.caption("Table 1: Classification Report for Standard CNN")
     st.dataframe(df_standard, width=683)
-    st.divider()
     
     st.caption("Figure 2: Confusion Matrix for Less Attributes CNN")
     st.image('figures/cm_less.png')
     st.caption("Table 2: Classification Report for Less Attributes CNN")
     st.dataframe(df_less, width=683)
-    st.divider()
     
     st.caption("Figure 3: Confusion Matrix for More Attributes CNN")
     st.image('figures/cm_more.png')
     st.caption("Table 3: Classification Report for More Attributes CNN")
     st.dataframe(df_more, width=683)
-    st.divider()
