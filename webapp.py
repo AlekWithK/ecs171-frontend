@@ -1,8 +1,14 @@
 import streamlit as st
 import pickle
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 model = pickle.load(open('mlp_model.pkl', 'rb'))
+df = pickle.load(open('df.pkl', 'rb'))
+df = df.fillna(0.5)
+df = df.drop('disease-likelihood', axis = 1)
+scalar = MinMaxScaler(feature_range=(0, 1))
 
 tab_model, tab_figures = st.tabs(["Model", "Figures"])
 
@@ -77,11 +83,20 @@ with tab_model:
         thal = int(st.selectbox('Thalassemia', thal_select)[0])
 
     st.divider()
+    
+    clicked = st.button("Predict", use_container_width=True)
 
     result = '0'
-    result = model.predict([[age, sex, cp, restbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])[0]
+    if clicked:
+        input = [age, sex, cp, restbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
+        new_row = pd.DataFrame([input], columns=df.columns)
+        df = pd.concat([df, new_row], ignore_index=True)
 
-    st.info(f"Heart Disease Risk: {result}")    
+        scaled_df = scalar.fit_transform(df)
+        result = model.predict(scaled_df[-1].reshape(1, -1))[0]    
+
+    st.markdown(f"### Heart Disease Likelihood: {result}")  
+    st.caption("Where a value of '0' means unlikely and '4' means very likely")       
     st.divider()
     
 with tab_figures:
